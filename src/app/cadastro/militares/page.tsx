@@ -13,7 +13,7 @@ export default function CadastroMilitares() {
   const auth = useAuth();
   const { user, profile, loading, isAdmin, isComandante } = auth || {};
   const router = useRouter();
-  useTheme(); // Mantém o contexto do tema
+  useTheme(); // Mantém o contexto do tema ativo
   interface MilitarFormData {
     nome: string;
     posto: string;

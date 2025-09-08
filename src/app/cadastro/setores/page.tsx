@@ -13,7 +13,7 @@ export default function CadastroSetores() {
   const auth = useAuth();
   const { user, loading, isAdmin } = auth || {};
   const router = useRouter();
-  useTheme(); // Mantém o contexto do tema
+  useTheme(); // Mantém o contexto do tema ativo
   interface SetorFormData {
     nome: string;
     descricao: string;

@@ -16,7 +16,7 @@ export default function Login() {
   const auth = useAuth();
   const signIn = auth?.signIn;
   if (!signIn) throw new Error('Auth context not initialized');
-  useTheme(); // Mantém o contexto do tema
+  useTheme(); // Mantém o contexto do tema ativo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

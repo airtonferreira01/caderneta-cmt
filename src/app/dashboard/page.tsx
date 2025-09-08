@@ -14,7 +14,7 @@ export default function Dashboard() {
   const auth = useAuth();
   const { user, profile, loading } = auth || {};
   const router = useRouter();
-  useTheme(); // Mantém o contexto do tema
+  useTheme(); // Mantém o contexto do tema ativo
   interface MilitarWithRelations extends Militar {
     setor?: {
       id: string;

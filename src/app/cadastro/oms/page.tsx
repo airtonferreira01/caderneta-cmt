@@ -12,7 +12,7 @@ export default function CadastroOMs() {
   const auth = useAuth();
   const { user, loading, isAdmin } = auth || {};
   const router = useRouter();
-  useTheme(); // Mantém o contexto do tema
+  useTheme(); // Mantém o contexto do tema ativo
   const [formData, setFormData] = useState({
     nome: '',
     sigla: '',

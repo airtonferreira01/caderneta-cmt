@@ -13,7 +13,7 @@ export default function EditarPerfil() {
   const auth = useAuth();
   const { user, profile, loading, refreshProfile } = auth || {};
   const router = useRouter();
-  useTheme(); // Mantém o contexto do tema
+  useTheme(); // Mantém o contexto do tema ativo
   const [formData, setFormData] = useState({
     nome: '',
     posto: '',

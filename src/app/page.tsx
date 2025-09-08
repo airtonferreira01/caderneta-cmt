@@ -7,7 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Home() {
   const router = useRouter();
-  useTheme(); // Mantém o contexto do tema
+  const { theme, toggleTheme } = useTheme(); // Obtém o tema e a função toggleTheme do contexto
 
   return (
     <div className="min-h-screen bg-green-600 dark:bg-gray-900 flex flex-col">
