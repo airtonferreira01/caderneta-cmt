@@ -7,6 +7,7 @@ import { Militar } from '@/types/database.types';
 
 interface MilitarNodeData extends Militar {
   setorNome: string;
+  setores?: Array<{ nome: string }>;
 }
 
 // Função para determinar a cor de fundo baseada no posto/graduação

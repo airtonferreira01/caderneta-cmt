@@ -9,9 +9,9 @@ import { Militar } from '@/types/database.types';
 
 interface MilitarWithSetor extends Militar {
   setor_nome?: string;
-  setores?: {
+  setores?: Array<{
     nome: string;
-  };
+  }>;
 }
 
 export default function PlanoChamada() {
@@ -59,7 +59,7 @@ export default function PlanoChamada() {
       // Formatar dados dos militares
       const formattedMilitares = militaresData?.map((militar) => ({
         ...militar,
-        setor_nome: militar.setores ? militar.setores.nome : 'Sem setor'
+        setor_nome: militar.setores && militar.setores.length > 0 ? militar.setores[0].nome : 'Sem setor'
       })) || [];
 
       setMilitares(formattedMilitares as MilitarWithSetor[]);

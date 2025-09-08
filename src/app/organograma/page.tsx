@@ -22,6 +22,7 @@ export default function Organograma() {
   const [error, setError] = useState<string | null>(null);
   interface MilitarWithSetorNome extends Militar {
     setorNome: string;
+    setores?: Array<{ nome: string }>;
   }
   
   const [selectedMilitar, setSelectedMilitar] = useState<MilitarWithSetorNome | null>(null);

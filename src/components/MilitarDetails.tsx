@@ -5,6 +5,7 @@ import Image from 'next/image';
 
 interface MilitarWithSetorNome extends Militar {
   setorNome?: string;
+  setores?: Array<{ nome: string }>;
   data_nascimento?: string | null;
   data_praca?: string | null;
   observacoes?: string | null;
