@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext, ReactNode } from 'react';
 import { supabase, getUserProfile } from '@/lib/auth-helpers';
 import AuthContext from '@/contexts/AuthContext';
-import { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 
 interface UserProfile {
   id: string;
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   /**
    * Fazer login com email e senha
    */
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<{ data: { user: User | null; session: Session | null } | null; error: Error | null }> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -86,21 +86,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return { data, error: null };
     } catch (error) {
       console.error('Erro ao fazer login:', (error as Error).message);
-      return { data: null, error };
+      return { data: null, error: error as Error };
     }
   };
 
   /**
    * Fazer logout
    */
-  const signOut = async () => {
+  const signOut = async (): Promise<{ error: Error | null }> => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       return { error: null };
     } catch (error) {
       console.error('Erro ao fazer logout:', (error as Error).message);
-      return { error };
+      return { error: error as Error };
     }
   };
 
@@ -121,8 +121,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user: User | null;
     profile: UserProfile | null;
     loading: boolean;
-    signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
-    signOut: () => Promise<{ error: any }>;
+    signIn: (email: string, password: string) => Promise<{ data: { user: User | null; session: Session | null } | null; error: Error | null }>;
+    signOut: () => Promise<{ error: Error | null }>;
     hasRole: (role: string | string[]) => boolean;
     isAdmin: () => boolean;
     isComandante: () => boolean;

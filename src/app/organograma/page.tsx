@@ -8,6 +8,7 @@ import { Militar, Setor } from '@/types/database.types';
 import MilitarNode from '@/components/MilitarNode';
 import MilitarDetails from '@/components/MilitarDetails';
 import { useRouter } from 'next/navigation';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // Registrando o nó personalizado
 const nodeTypes = {
@@ -32,7 +33,7 @@ export default function Organograma() {
       try {
         setLoading(true);
         // Usar tipagem explícita para o cliente Supabase
-        const supabaseClient: any = createBrowserClient();
+        const supabaseClient: SupabaseClient = createBrowserClient();
         
         // Buscar militares
         const { data: militaresData, error: militaresError } = await supabaseClient
@@ -83,9 +84,9 @@ export default function Organograma() {
         
         setNodes(flowNodes);
         setEdges(flowEdges);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Erro ao carregar dados:', err);
-        setError(err.message || 'Erro ao carregar o organograma');
+        setError(err instanceof Error ? err.message : 'Erro ao carregar o organograma');
       } finally {
         setLoading(false);
       }
@@ -94,7 +95,7 @@ export default function Organograma() {
     fetchData();
     
     // Configurar listener para atualizações em tempo real
-    const supabaseClient: any = createBrowserClient();
+    const supabaseClient: SupabaseClient = createBrowserClient();
     
     const militaresSubscription = supabaseClient
       .channel('militares-changes')

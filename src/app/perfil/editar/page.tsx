@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, updateUserProfile } from '@/lib/auth-helpers';
+import type { UserProfile } from '@/contexts/AuthContext';
 
 export default function EditarPerfil() {
   const auth = useAuth();
@@ -34,8 +35,8 @@ export default function EditarPerfil() {
     } else if (profile) {
       // Preencher formulário com dados do perfil
       setFormData({
-        nome: (profile as any)?.nome || '',
-        posto: (profile as any)?.posto || '',
+        nome: profile?.nome || '',
+        posto: profile?.posto || '',
         telefone: '',
         endereco: '',
         foto_url: ''
@@ -67,8 +68,8 @@ export default function EditarPerfil() {
         endereco: data.endereco || '',
         foto_url: data.foto_url || ''
       }));
-    } catch (error) {
-      console.error('Erro ao buscar dados do militar:', (error as Error).message);
+    } catch (error: unknown) {
+      console.error('Erro ao buscar dados do militar:', error instanceof Error ? error.message : 'Erro desconhecido');
     } finally {
       setLoadingData(false);
     }
@@ -108,8 +109,8 @@ export default function EditarPerfil() {
         ...prev,
         foto_url: data.publicUrl
       }));
-    } catch (error) {
-      console.error('Erro ao fazer upload da foto:', (error as Error).message);
+    } catch (error: unknown) {
+      console.error('Erro ao fazer upload da foto:', error instanceof Error ? error.message : 'Erro desconhecido');
       setError('Erro ao fazer upload da foto. Tente novamente.');
     } finally {
       setUploading(false);
@@ -134,7 +135,11 @@ export default function EditarPerfil() {
         if (profileError) throw profileError;
       }
 
-      if ('error' in result && result.error) throw result.error;
+      if ('error' in result && result && typeof result === 'object') {
+        if (result && typeof result === 'object' && 'error' in result && result.error) {
+          throw result.error;
+        }
+      }
 
       // Atualizar dados do militar se existir
       if (profile?.militar_id) {
@@ -162,8 +167,8 @@ export default function EditarPerfil() {
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);
-    } catch (err) {
-      console.error('Erro ao atualizar perfil:', err instanceof Error ? err.message : 'Unknown error');
+    } catch (err: unknown) {
+      console.error('Erro ao atualizar perfil:', err instanceof Error ? err.message : 'Erro desconhecido');
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao atualizar o perfil.');
     } finally {
       setSaving(false);

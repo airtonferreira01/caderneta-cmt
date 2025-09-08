@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/auth-helpers';
 import { useTheme } from '@/contexts/ThemeContext';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export default function Register() {
   const { theme } = useTheme();
@@ -37,7 +38,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const supabaseClient: any = createBrowserClient();
+      const supabaseClient: SupabaseClient = createBrowserClient();
       
       // Registrar usuário
       const { data, error: authError } = await supabaseClient.auth.signUp({
@@ -62,8 +63,9 @@ export default function Register() {
         router.push('/login');
       }, 3000);
       
-    } catch (err: any) {
-      setError(err.message || 'Ocorreu um erro ao registrar. Por favor, tente novamente.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro ao registrar. Por favor, tente novamente.';
+      setError(errorMessage);
       console.error(err);
     } finally {
       setLoading(false);

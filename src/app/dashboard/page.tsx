@@ -56,8 +56,8 @@ export default function Dashboard() {
 
       if (error) throw error;
       setMilitarData(data);
-    } catch (error) {
-      console.error('Erro ao buscar dados do militar:', (error as Error).message);
+    } catch (error: unknown) {
+      console.error('Erro ao buscar dados do militar:', error instanceof Error ? error.message : 'Erro desconhecido');
     } finally {
       setLoadingData(false);
     }

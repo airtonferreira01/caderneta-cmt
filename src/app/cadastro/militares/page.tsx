@@ -81,8 +81,8 @@ export default function CadastroMilitares() {
           om_id: profile.om_id as string
         }));
       }
-    } catch (error) {
-      console.error('Erro ao buscar dados:', (error as Error).message);
+    } catch (error: unknown) {
+      console.error('Erro ao buscar dados:', error instanceof Error ? error.message : 'Erro desconhecido');
       setError('Erro ao carregar dados necessários.');
     } finally {
       setLoadingData(false);
@@ -140,8 +140,8 @@ export default function CadastroMilitares() {
         setor_id: '',
         om_id: formData.om_id // Manter a OM selecionada para facilitar múltiplos cadastros
       });
-    } catch (err) {
-      console.error('Erro ao cadastrar militar:', (err as Error).message);
+    } catch (err: unknown) {
+      console.error('Erro ao cadastrar militar:', err instanceof Error ? err.message : 'Erro desconhecido');
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao cadastrar o militar.');
     } finally {
       setSaving(false);

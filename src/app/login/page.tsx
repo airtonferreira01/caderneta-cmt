@@ -31,7 +31,7 @@ export default function Login() {
       } else {
         router.push('/organograma');
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setError('Ocorreu um erro ao fazer login. Por favor, tente novamente.');
       console.error(err);
     } finally {

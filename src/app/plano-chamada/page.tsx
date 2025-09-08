@@ -67,14 +67,14 @@ export default function PlanoChamada() {
       if (militaresError) throw militaresError;
       
       // Formatar dados dos militares
-      const formattedMilitares = militaresData?.map((militar: any) => ({
+      const formattedMilitares = militaresData?.map((militar) => ({
         ...militar,
-        setor_nome: militar.setores?.nome || 'Sem setor'
+        setor_nome: militar.setores ? militar.setores.nome : 'Sem setor'
       })) || [];
 
-      setMilitares(formattedMilitares);
-    } catch (error) {
-      console.error('Erro ao buscar dados:', (error as Error).message);
+      setMilitares(formattedMilitares as MilitarWithSetor[]);
+    } catch (error: unknown) {
+      console.error('Erro ao buscar dados:', error instanceof Error ? error.message : 'Erro desconhecido');
       setError('Erro ao carregar dados. Por favor, tente novamente.');
     } finally {
       setLoadingData(false);

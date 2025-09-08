@@ -77,8 +77,8 @@ export default function CadastroOMs() {
         endereco: '',
         telefone: ''
       });
-    } catch (err) {
-      console.error('Erro ao cadastrar OM:', err instanceof Error ? err.message : 'Unknown error');
+    } catch (err: unknown) {
+      console.error('Erro ao cadastrar OM:', err instanceof Error ? err.message : 'Erro desconhecido');
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao cadastrar a Organização Militar.');
     } finally {
       setSaving(false);

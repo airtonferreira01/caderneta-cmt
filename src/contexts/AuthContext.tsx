@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 
 interface UserProfile {
   id: string;
@@ -16,8 +16,8 @@ interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
-  signOut: () => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ data: { user: User | null; session: Session | null } | null; error: Error | null }>;
+  signOut: () => Promise<{ error: Error | null }>;
   hasRole: (role: string | string[]) => boolean;
   isAdmin: () => boolean;
   isComandante: () => boolean;

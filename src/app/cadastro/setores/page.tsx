@@ -55,8 +55,8 @@ export default function CadastroSetores() {
 
       if (omsError) throw omsError;
       setOms(omsData || []);
-    } catch (error) {
-      console.error('Erro ao buscar OMs:', (error as Error).message);
+    } catch (error: unknown) {
+      console.error('Erro ao buscar OMs:', error instanceof Error ? error.message : 'Erro desconhecido');
       setError('Erro ao carregar organizações militares.');
     } finally {
       setLoadingData(false);
@@ -106,8 +106,8 @@ export default function CadastroSetores() {
         descricao: '',
         om_id: formData.om_id // Manter a OM selecionada para facilitar múltiplos cadastros
       });
-    } catch (err) {
-      console.error('Erro ao cadastrar setor:', (err as Error).message);
+    } catch (err: unknown) {
+      console.error('Erro ao cadastrar setor:', err instanceof Error ? err.message : 'Erro desconhecido');
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao cadastrar o setor.');
     } finally {
       setSaving(false);
