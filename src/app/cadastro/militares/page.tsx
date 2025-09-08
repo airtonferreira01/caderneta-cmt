@@ -40,18 +40,6 @@ export default function CadastroMilitares() {
   const [error, setError] = useState('');
   const [loadingData, setLoadingData] = useState(true);
 
-  useEffect(() => {
-    // Redirecionar se não estiver autenticado ou não tiver permissão
-    if (!loading && !user) {
-      router.push('/login');
-    } else if (!loading && user && !isAdmin && !isComandante) {
-      router.push('/dashboard');
-    } else if (user) {
-      // Carregar dados necessários
-      fetchSetoresAndOMs();
-    }
-  }, [user, loading, router, isAdmin, isComandante, fetchSetoresAndOMs]);
-
   const fetchSetoresAndOMs = useCallback(async () => {
     try {
       setLoadingData(true);
@@ -88,6 +76,18 @@ export default function CadastroMilitares() {
       setLoadingData(false);
     }
   }, [isComandante, profile]);
+
+  useEffect(() => {
+    // Redirecionar se não estiver autenticado ou não tiver permissão
+    if (!loading && !user) {
+      router.push('/login');
+    } else if (!loading && user && !isAdmin && !isComandante) {
+      router.push('/dashboard');
+    } else if (user) {
+      // Carregar dados necessários
+      fetchSetoresAndOMs();
+    }
+  }, [user, loading, router, isAdmin, isComandante, fetchSetoresAndOMs]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
