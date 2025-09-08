@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,9 +11,9 @@ import { OM } from '@/types/database.types';
 
 export default function CadastroSetores() {
   const auth = useAuth();
-  const { user, profile, loading, isAdmin } = auth || {};
+  const { user, loading, isAdmin } = auth || {};
   const router = useRouter();
-  const { theme } = useTheme();
+  useTheme(); // Mantém o contexto do tema
   interface SetorFormData {
     nome: string;
     descricao: string;
@@ -41,9 +41,9 @@ export default function CadastroSetores() {
       // Carregar dados necessários
       fetchOMs();
     }
-  }, [user, loading, router, isAdmin]);
+  }, [user, loading, router, isAdmin, fetchOMs]);
 
-  const fetchOMs = async () => {
+  const fetchOMs = useCallback(async () => {
     try {
       setLoadingData(true);
       
@@ -61,7 +61,7 @@ export default function CadastroSetores() {
     } finally {
       setLoadingData(false);
     }
-  };
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -84,7 +84,7 @@ export default function CadastroSetores() {
       }
 
       // Criar novo setor
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('setores')
         .insert([
           {

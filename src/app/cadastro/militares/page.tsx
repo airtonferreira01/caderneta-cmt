@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -13,7 +13,7 @@ export default function CadastroMilitares() {
   const auth = useAuth();
   const { user, profile, loading, isAdmin, isComandante } = auth || {};
   const router = useRouter();
-  const { theme } = useTheme();
+  useTheme(); // Mantém o contexto do tema
   interface MilitarFormData {
     nome: string;
     posto: string;
@@ -50,9 +50,9 @@ export default function CadastroMilitares() {
       // Carregar dados necessários
       fetchSetoresAndOMs();
     }
-  }, [user, loading, router, isAdmin, isComandante]);
+  }, [user, loading, router, isAdmin, isComandante, fetchSetoresAndOMs]);
 
-  const fetchSetoresAndOMs = async () => {
+  const fetchSetoresAndOMs = useCallback(async () => {
     try {
       setLoadingData(true);
       
@@ -87,7 +87,7 @@ export default function CadastroMilitares() {
     } finally {
       setLoadingData(false);
     }
-  };
+  }, [isComandante, profile]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -110,7 +110,7 @@ export default function CadastroMilitares() {
       }
 
       // Criar novo militar
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('militares')
         .insert([
           {

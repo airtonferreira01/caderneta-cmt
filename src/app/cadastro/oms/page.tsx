@@ -12,7 +12,7 @@ export default function CadastroOMs() {
   const auth = useAuth();
   const { user, loading, isAdmin } = auth || {};
   const router = useRouter();
-  const { theme } = useTheme();
+  useTheme(); // Mantém o contexto do tema
   const [formData, setFormData] = useState({
     nome: '',
     sigla: '',
@@ -53,7 +53,7 @@ export default function CadastroOMs() {
       }
 
       // Criar nova OM
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('oms')
         .insert([
           {

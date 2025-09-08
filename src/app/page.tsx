@@ -2,12 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
+
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Home() {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  useTheme(); // Mantém o contexto do tema
 
   return (
     <div className="min-h-screen bg-green-600 dark:bg-gray-900 flex flex-col">

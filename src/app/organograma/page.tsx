@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import ReactFlow, { Background, Controls, MiniMap, Node, Edge, useReactFlow, NodeMouseHandler } from 'reactflow';
+import ReactFlow, { Background, Controls, MiniMap, Node, Edge, NodeMouseHandler } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { createBrowserClient } from '@/lib/auth-helpers';
 import { Militar, Setor } from '@/types/database.types';
@@ -118,10 +118,10 @@ export default function Organograma() {
       militaresSubscription.unsubscribe();
       setoresSubscription.unsubscribe();
     };
-  }, []);
+  }, [organizeHierarchy]);
   
   // Função para organizar os nós em uma estrutura hierárquica
-  const organizeHierarchy = (nodes: Node<MilitarWithSetorNome>[], edges: Edge[]) => {
+  const organizeHierarchy = useCallback((nodes: Node<MilitarWithSetorNome>[], edges: Edge[]) => {
     // Encontrar nós raiz (sem superior)
     const rootNodes = nodes.filter(node => {
       return !edges.some(edge => edge.target === node.id);
@@ -155,7 +155,7 @@ export default function Organograma() {
     rootNodes.forEach((rootNode, index) => {
       positionChildren(rootNode.id, 1, index * 300 - 100);
     });
-  };
+  }, []);
   
   if (loading) {
     return (

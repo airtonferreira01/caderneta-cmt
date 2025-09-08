@@ -9,7 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 export default function Register() {
-  const { theme } = useTheme();
+  useTheme(); // Mantém o contexto do tema
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -41,7 +41,7 @@ export default function Register() {
       const supabaseClient: SupabaseClient = createBrowserClient();
       
       // Registrar usuário
-      const { data, error: authError } = await supabaseClient.auth.signUp({
+      const { error: authError } = await supabaseClient.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {

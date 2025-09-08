@@ -12,9 +12,9 @@ import { Militar } from '@/types/database.types';
 
 export default function Dashboard() {
   const auth = useAuth();
-  const { user, profile, loading, signOut } = auth || {};
+  const { user, profile, loading } = auth || {};
   const router = useRouter();
-  const { theme } = useTheme();
+  useTheme(); // Mantém o contexto do tema
   interface MilitarWithRelations extends Militar {
     setor?: {
       id: string;
@@ -63,12 +63,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleSignOut = async () => {
-    if (signOut) {
-      await signOut();
-    }
-    router.push('/');
-  };
+  // Função de logout removida pois está sendo usada no componente DashboardNav
 
   if (loading || loadingData) {
     return (

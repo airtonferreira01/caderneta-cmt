@@ -2,7 +2,7 @@
  * Funções auxiliares para autenticação e gerenciamento de perfis de usuários
  */
 
-import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Interface para o perfil do usuário

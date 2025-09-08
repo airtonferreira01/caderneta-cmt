@@ -99,7 +99,7 @@ const formatDate = (dateString?: string | null) => {
   try {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
-  } catch (error) {
+  } catch {
     return 'Data inválida';
   }
 };

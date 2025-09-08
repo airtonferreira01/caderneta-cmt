@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { getUserProfile, updateUserProfile, UserProfile } from '../lib/auth-helpers';
 
 // Interface FormData para os dados do formulário

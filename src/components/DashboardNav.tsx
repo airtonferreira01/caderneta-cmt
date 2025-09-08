@@ -98,7 +98,7 @@ export default function DashboardNav() {
 
               <div className="relative group">
                 <button className="flex items-center space-x-2 hover:text-green-200 dark:hover:text-blue-200 transition duration-300">
-                  <span className="font-medium">{(profile as any)?.nome || user?.email}</span>
+                  <span className="font-medium">{profile?.nome || user?.email}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>

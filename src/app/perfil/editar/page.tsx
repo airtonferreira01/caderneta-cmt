@@ -7,13 +7,13 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, updateUserProfile } from '@/lib/auth-helpers';
-import type { UserProfile } from '@/contexts/AuthContext';
+
 
 export default function EditarPerfil() {
   const auth = useAuth();
   const { user, profile, loading, refreshProfile } = auth || {};
   const router = useRouter();
-  const { theme } = useTheme();
+  useTheme(); // Mantém o contexto do tema
   const [formData, setFormData] = useState({
     nome: '',
     posto: '',
