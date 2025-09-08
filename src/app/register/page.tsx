@@ -37,13 +37,10 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const supabase = createBrowserClient();
+      const supabaseClient: any = createBrowserClient();
       
       // Registrar usuário
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-
-
-
+      const { data, error: authError } = await supabaseClient.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {

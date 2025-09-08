@@ -31,18 +31,19 @@ export default function Organograma() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const supabase = createBrowserClient();
+        // Usar tipagem explícita para o cliente Supabase
+        const supabaseClient: any = createBrowserClient();
         
         // Buscar militares
-        const { data: militares, error: militaresError } = await supabase
-          .from('militares').select<Militar>()
+        const { data: militaresData, error: militaresError } = await supabaseClient
+          .from('militares')
           .select('*');
           
         if (militaresError) throw militaresError;
         
         // Buscar setores
-        const { data: setores, error: setoresError } = await supabase
-          .from<Setor>('setores')
+        const { data: setoresData, error: setoresError } = await supabaseClient
+          .from('setores')
           .select('*');
           
         if (setoresError) throw setoresError;
@@ -52,9 +53,9 @@ export default function Organograma() {
         const flowEdges: Edge[] = [];
         
         // Criar nós para cada militar
-        militares.forEach((militar: Militar) => {
+        militaresData.forEach((militar: Militar) => {
           // Encontrar o setor do militar
-          const setor = setores.find((s: Setor) => s.id === militar.setor_id);
+          const setor = setoresData.find((s: Setor) => s.id === militar.setor_id);
           
           flowNodes.push({
             id: militar.id,
@@ -93,9 +94,9 @@ export default function Organograma() {
     fetchData();
     
     // Configurar listener para atualizações em tempo real
-    const supabase = createBrowserClient();
+    const supabaseClient: any = createBrowserClient();
     
-    const militaresSubscription = supabase
+    const militaresSubscription = supabaseClient
       .channel('militares-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'militares' }, () => {
         // Recarregar dados quando houver mudanças
@@ -103,8 +104,8 @@ export default function Organograma() {
       })
       .subscribe();
       
-    const setoresSubscription = supabase
-      .channel('setores-changes' as string)
+    const setoresSubscription = supabaseClient
+      .channel('setores-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'setores' }, () => {
         // Recarregar dados quando houver mudanças
         fetchData();

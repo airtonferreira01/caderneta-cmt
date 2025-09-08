@@ -85,8 +85,8 @@ export default function PlanoChamada() {
   const filteredMilitares = militares.filter(militar => {
     const matchesSearch = 
       militar.nome_guerra.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      militar.nome_guerra.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (militar.posto || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      militar.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (militar.posto_grad || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (militar.telefone && militar.telefone.includes(searchTerm));
     
     const matchesSetor = selectedSetor === 'todos' || militar.setor_id === selectedSetor;
@@ -180,7 +180,7 @@ export default function PlanoChamada() {
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="font-bold text-green-800 dark:text-white">{militar.posto || ''} {militar.nome_guerra}</h3>
+                        <h3 className="font-bold text-green-800 dark:text-white">{militar.posto_grad || ''} {militar.nome_guerra}</h3>
                         <p className="text-gray-600 dark:text-gray-300 text-sm">{militar.setor_nome}</p>
                       </div>
                     </div>

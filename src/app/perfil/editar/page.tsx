@@ -125,14 +125,14 @@ export default function EditarPerfil() {
     try {
       // Atualizar perfil do usuário
       const result = await updateUserProfile({
-if ('error' in result) {
-  const { error: profileError } = result;
-  if (profileError) throw profileError;
-}
-
         nome: formData.nome,
         posto: formData.posto
       });
+      
+      if ('error' in result && result) {
+        const { error: profileError } = result;
+        if (profileError) throw profileError;
+      }
 
       if ('error' in result && result.error) throw result.error;
 
