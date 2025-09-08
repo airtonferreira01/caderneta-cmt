@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -32,30 +32,7 @@ export default function EditarPerfil() {
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    // Redirecionar se não estiver autenticado
-    if (!loading && !user) {
-      router.push('/login');
-    } else if (profile) {
-      // Preencher formulário com dados do perfil
-      setFormData({
-        nome: profile?.nome || '',
-        posto: profile?.posto || '',
-        telefone: '',
-        endereco: '',
-        foto_url: ''
-      });
-
-      // Carregar dados do militar se existir
-      if (profile.militar_id) {
-        fetchMilitarData(profile.militar_id);
-      } else {
-        setLoadingData(false);
-      }
-    }
-  }, [user, loading, profile, router]);
-
-  const fetchMilitarData = async (militarId: string) => {
+  const fetchMilitarData = useCallback(async (militarId: string) => {
     try {
       const { data, error } = await supabase
         .from('militares')
@@ -77,7 +54,30 @@ export default function EditarPerfil() {
     } finally {
       setLoadingData(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Redirecionar se não estiver autenticado
+    if (!loading && !user) {
+      router.push('/login');
+    } else if (profile) {
+      // Preencher formulário com dados do perfil
+      setFormData({
+        nome: profile?.nome || '',
+        posto: profile?.posto || '',
+        telefone: '',
+        endereco: '',
+        foto_url: ''
+      });
+
+      // Carregar dados do militar se existir
+      if (profile.militar_id) {
+        fetchMilitarData(profile.militar_id);
+      } else {
+        setLoadingData(false);
+      }
+    }
+  }, [user, loading, profile, router, fetchMilitarData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

@@ -28,6 +28,43 @@ export default function Organograma() {
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
   
+  // Função para organizar os nós em uma estrutura hierárquica
+  const organizeHierarchy = useCallback((nodes: Node<MilitarWithSetorNome>[], edges: Edge[]) => {
+    // Encontrar nós raiz (sem superior)
+    const rootNodes = nodes.filter(node => {
+      return !edges.some(edge => edge.target === node.id);
+    });
+    
+    // Posicionar nós raiz no topo
+    rootNodes.forEach((node, index) => {
+      node.position = { x: index * 300, y: 0 };
+    });
+    
+    // Função recursiva para posicionar nós filhos
+    const positionChildren = (parentId: string, level: number, horizontalOffset: number) => {
+      // Encontrar todos os nós filhos deste pai
+      const childEdges = edges.filter(edge => edge.source === parentId);
+      const childIds = childEdges.map(edge => edge.target);
+      const childNodes = nodes.filter(node => childIds.includes(node.id));
+      
+      // Posicionar cada filho
+      childNodes.forEach((childNode, index) => {
+        const x = horizontalOffset + index * 200;
+        const y = level * 150;
+        
+        childNode.position = { x, y };
+        
+        // Posicionar recursivamente os filhos deste nó
+        positionChildren(childNode.id, level + 1, x - 100);
+      });
+    };
+    
+    // Iniciar posicionamento a partir dos nós raiz
+    rootNodes.forEach((rootNode, index) => {
+      positionChildren(rootNode.id, 1, index * 300 - 100);
+    });
+  }, []);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -119,43 +156,6 @@ export default function Organograma() {
       setoresSubscription.unsubscribe();
     };
   }, [organizeHierarchy]);
-  
-  // Função para organizar os nós em uma estrutura hierárquica
-  const organizeHierarchy = useCallback((nodes: Node<MilitarWithSetorNome>[], edges: Edge[]) => {
-    // Encontrar nós raiz (sem superior)
-    const rootNodes = nodes.filter(node => {
-      return !edges.some(edge => edge.target === node.id);
-    });
-    
-    // Posicionar nós raiz no topo
-    rootNodes.forEach((node, index) => {
-      node.position = { x: index * 300, y: 0 };
-    });
-    
-    // Função recursiva para posicionar nós filhos
-    const positionChildren = (parentId: string, level: number, horizontalOffset: number) => {
-      // Encontrar todos os nós filhos deste pai
-      const childEdges = edges.filter(edge => edge.source === parentId);
-      const childIds = childEdges.map(edge => edge.target);
-      const childNodes = nodes.filter(node => childIds.includes(node.id));
-      
-      // Posicionar cada filho
-      childNodes.forEach((childNode, index) => {
-        const x = horizontalOffset + index * 200;
-        const y = level * 150;
-        
-        childNode.position = { x, y };
-        
-        // Posicionar recursivamente os filhos deste nó
-        positionChildren(childNode.id, level + 1, x - 100);
-      });
-    };
-    
-    // Iniciar posicionamento a partir dos nós raiz
-    rootNodes.forEach((rootNode, index) => {
-      positionChildren(rootNode.id, 1, index * 300 - 100);
-    });
-  }, []);
   
   if (loading) {
     return (

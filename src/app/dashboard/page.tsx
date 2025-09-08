@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,19 +30,7 @@ export default function Dashboard() {
   const [militarData, setMilitarData] = useState<MilitarWithRelations | null>(null);
   const [loadingData, setLoadingData] = useState(true);
 
-  useEffect(() => {
-    // Redirecionar se não estiver autenticado
-    if (!loading && !user) {
-      router.push('/login');
-    } else if (profile?.militar_id) {
-      // Carregar dados do militar se estiver autenticado
-      fetchMilitarData(profile.militar_id);
-    } else {
-      setLoadingData(false);
-    }
-  }, [user, loading, profile, router]);
-
-  const fetchMilitarData = async (militarId: string) => {
+  const fetchMilitarData = useCallback(async (militarId: string) => {
     try {
       const { data, error } = await supabase
         .from('militares')
@@ -61,7 +49,19 @@ export default function Dashboard() {
     } finally {
       setLoadingData(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Redirecionar se não estiver autenticado
+    if (!loading && !user) {
+      router.push('/login');
+    } else if (profile?.militar_id) {
+      // Carregar dados do militar se estiver autenticado
+      fetchMilitarData(profile.militar_id);
+    } else {
+      setLoadingData(false);
+    }
+  }, [user, loading, profile, router, fetchMilitarData]);
 
   // Função de logout removida pois está sendo usada no componente DashboardNav
 

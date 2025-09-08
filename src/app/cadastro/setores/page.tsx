@@ -31,18 +31,6 @@ export default function CadastroSetores() {
   const [error, setError] = useState('');
   const [loadingData, setLoadingData] = useState(true);
 
-  useEffect(() => {
-    // Redirecionar se não estiver autenticado ou não tiver permissão
-    if (!loading && !user) {
-      router.push('/login');
-    } else if (!loading && user && !isAdmin) {
-      router.push('/dashboard');
-    } else if (user) {
-      // Carregar dados necessários
-      fetchOMs();
-    }
-  }, [user, loading, router, isAdmin, fetchOMs]);
-
   const fetchOMs = useCallback(async () => {
     try {
       setLoadingData(true);
@@ -62,6 +50,18 @@ export default function CadastroSetores() {
       setLoadingData(false);
     }
   }, []);
+
+  useEffect(() => {
+    // Redirecionar se não estiver autenticado ou não tiver permissão
+    if (!loading && !user) {
+      router.push('/login');
+    } else if (!loading && user && !isAdmin) {
+      router.push('/dashboard');
+    } else if (user) {
+      // Carregar dados necessários
+      fetchOMs();
+    }
+  }, [user, loading, router, isAdmin, fetchOMs]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

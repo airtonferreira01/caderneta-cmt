@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/auth-helpers';
@@ -26,17 +26,7 @@ export default function PlanoChamada() {
   const [selectedSetor, setSelectedSetor] = useState<string>('todos');
   const [setores, setSetores] = useState<{id: string, nome: string}[]>([]);
 
-  useEffect(() => {
-    // Redirecionar se não estiver autenticado
-    if (!loading && !user) {
-      router.push('/login');
-    } else if (user) {
-      // Carregar dados necessários
-      fetchMilitaresESetores();
-    }
-  }, [user, loading, router]);
-
-  const fetchMilitaresESetores = async () => {
+  const fetchMilitaresESetores = useCallback(async () => {
     try {
       setLoadingData(true);
       
@@ -79,7 +69,17 @@ export default function PlanoChamada() {
     } finally {
       setLoadingData(false);
     }
-  };
+  }, []);
+  
+  useEffect(() => {
+    // Redirecionar se não estiver autenticado
+    if (!loading && !user) {
+      router.push('/login');
+    } else if (user) {
+      // Carregar dados necessários
+      fetchMilitaresESetores();
+    }
+  }, [user, loading, router, fetchMilitaresESetores]);
 
   // Filtrar militares por termo de busca e setor selecionado
   const filteredMilitares = militares.filter(militar => {
