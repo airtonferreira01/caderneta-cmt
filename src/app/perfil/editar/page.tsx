@@ -21,7 +21,11 @@ export default function EditarPerfil() {
     endereco: '',
     foto_url: ''
   });
-  const [militarData, setMilitarData] = useState(null);
+  const [militarData, setMilitarData] = useState<{
+    foto_url?: string | null;
+    telefone?: string | null;
+    endereco?: string | null;
+  } | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -227,7 +231,7 @@ export default function EditarPerfil() {
               <div className="mb-6 flex flex-col items-center">
                 <div className="relative mb-4">
                   <Image 
-                    src={(formData as any).foto_url || (militarData as any)?.foto_url || "/placeholder-profile.svg"}
+                    src={formData.foto_url || militarData?.foto_url || "/placeholder-profile.svg"}
                     alt="Foto do Perfil" 
                     width={120} 
                     height={120} 

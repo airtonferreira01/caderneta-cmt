@@ -19,7 +19,8 @@ export const createBrowserClient = () => {
 };
 
 // Exportar como default para compatibilidade com importações de '@/lib/supabase'
-export default { createBrowserClient, supabase };
+const authHelpers = { createBrowserClient, supabase };
+export default authHelpers;
 
 /**
  * Obter o perfil do usuário atual

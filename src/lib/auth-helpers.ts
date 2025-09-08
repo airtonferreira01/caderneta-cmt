@@ -2,7 +2,36 @@
  * Funções auxiliares para autenticação e gerenciamento de perfis de usuários
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
+
+/**
+ * Interface para o perfil do usuário
+ */
+export interface UserProfile {
+  id: string;
+  nome?: string;
+  posto?: string;
+  perfil: string;
+  militar_id?: string;
+  om_id?: string;
+  setor_id?: string;
+  created_at: string;
+  updated_at: string;
+  militares?: {
+    nome_completo: string;
+    nome_guerra: string;
+    posto_grad: string;
+    funcao: string;
+    foto_url?: string;
+  };
+  om?: {
+    nome: string;
+    tipo: string;
+  };
+  setores?: {
+    nome: string;
+  };
+}
 
 // Inicializar cliente Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,13 +54,14 @@ export const createBrowserClient = (): SupabaseClient => {
 };
 
 // Exportar como default para compatibilidade com importações de '@/lib/supabase'
-export default { createBrowserClient, supabase } as { createBrowserClient: () => SupabaseClient, supabase: SupabaseClient };
+const authHelpers = { createBrowserClient, supabase };
+export default authHelpers;
 
 /**
  * Obter o perfil do usuário atual
- * @returns {Promise<any>} Dados do perfil do usuário
+ * @returns {Promise<UserProfile | null>} Dados do perfil do usuário
  */
-export async function getUserProfile() {
+export async function getUserProfile(): Promise<UserProfile | null> {
   try {
     // Obter usuário atual
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -72,10 +102,10 @@ export async function getUserProfile() {
 
 /**
  * Criar ou atualizar perfil de usuário
- * @param {Record<string, any>} profileData Dados do perfil a serem atualizados
- * @returns {Promise<{data: any, error: Error | null}>} Resultado da operação
+ * @param {Record<string, unknown>} profileData Dados do perfil a serem atualizados
+ * @returns {Promise<{data: UserProfile | null, error: Error | null}>} Resultado da operação
  */
-export async function updateUserProfile(profileData: Record<string, any>) {
+export async function updateUserProfile(profileData: Record<string, unknown>): Promise<{data: UserProfile | null, error: Error | null}> {
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
@@ -136,9 +166,9 @@ export async function isComandante() {
  * Criar perfil para um novo usuário após registro
  * @param {string} userId ID do usuário recém-criado
  * @param {Object} profileData Dados iniciais do perfil
- * @returns {Promise<Object>} Resultado da operação
+ * @returns {Promise<{data: UserProfile | null, error: Error | null}>} Resultado da operação
  */
-export async function createUserProfile(userId: string, profileData: Record<string, any>) {
+export async function createUserProfile(userId: string, profileData: Record<string, unknown>): Promise<{data: UserProfile | null, error: Error | null}> {
   try {
     const { data, error } = await supabase
       .from('perfis_usuarios')

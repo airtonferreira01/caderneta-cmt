@@ -39,7 +39,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           
           // Carregar perfil do usuário
           const userProfile = await getUserProfile();
-          setProfile(userProfile as UserProfile | null);
+          setProfile(userProfile);
         }
       } catch (error) {
         console.error('Erro ao carregar usuário:', error);
@@ -143,8 +143,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isMilitar: () => !!profile,
     refreshProfile: async (): Promise<UserProfile | null> => {
       const userProfile = await getUserProfile();
-      setProfile(userProfile as UserProfile | null);
-      return userProfile as UserProfile | null;
+      setProfile(userProfile);
+      return userProfile;
     },
   };
 

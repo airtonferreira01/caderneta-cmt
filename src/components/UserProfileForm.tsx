@@ -1,18 +1,9 @@
 'use client';
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { getUserProfile, updateUserProfile } from '../lib/auth-helpers';
+import { getUserProfile, updateUserProfile, UserProfile } from '../lib/auth-helpers';
 
-interface UserProfile {
-  id: string;
-  user_id: string;
-  nome?: string;
-  posto?: string;
-  perfil: string;
-  militar_id?: string;
-  created_at: string;
-  updated_at: string;
-}
+// Interface FormData para os dados do formulário
 
 interface FormData {
   nome: string;
@@ -42,8 +33,8 @@ export default function UserProfileForm() {
         if (userProfile) {
           setProfile(userProfile as UserProfile);
           setFormData({
-            nome: (userProfile as UserProfile).nome || '',
-            posto: (userProfile as UserProfile).posto || '',
+            nome: userProfile.nome || '',
+            posto: userProfile.posto || '',
           });
         }
       } catch (err) {
@@ -58,7 +49,7 @@ export default function UserProfileForm() {
   }, []);
 
   // Manipular mudanças no formulário
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -73,7 +64,7 @@ export default function UserProfileForm() {
     try {
       setLoading(true);
       const response = await updateUserProfile(formData);
-      const { data, error } = response as { data: UserProfile | null; error: Error | null };
+      const { data, error } = response;
       
       if (error) {
         throw error;
@@ -84,7 +75,7 @@ export default function UserProfileForm() {
       
       // Limpar mensagem após 3 segundos
       setTimeout(() => setMessage(''), 3000);
-    } catch (err) {
+    } catch (err: unknown) {
       setError('Erro ao atualizar perfil: ' + (err instanceof Error ? err.message : 'Erro desconhecido'));
       console.error(err);
     } finally {
@@ -143,10 +134,10 @@ export default function UserProfileForm() {
         {profile?.militar_id && (
           <div className="mb-4 p-4 bg-gray-50 rounded">
             <h3 className="font-semibold mb-2">Dados do Militar</h3>
-            <p><strong>Nome Completo:</strong> {(profile as any).militares?.nome_completo}</p>
-            <p><strong>Nome de Guerra:</strong> {(profile as any).militares?.nome_guerra}</p>
-            <p><strong>Função:</strong> {(profile as any).militares?.funcao}</p>
-            <p><strong>Setor:</strong> {(profile as any).setor?.nome}</p>
+            <p><strong>Nome Completo:</strong> {profile.militares?.nome_completo}</p>
+            <p><strong>Nome de Guerra:</strong> {profile.militares?.nome_guerra}</p>
+            <p><strong>Função:</strong> {profile.militares?.funcao}</p>
+            <p><strong>Setor:</strong> {profile.setor?.nome}</p>
           </div>
         )}
         
