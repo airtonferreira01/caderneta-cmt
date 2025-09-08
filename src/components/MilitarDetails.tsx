@@ -3,7 +3,20 @@
 import { Militar } from '@/types/database.types';
 import Image from 'next/image';
 
-interface MilitarWithSetorNome extends Militar {
+interface MilitarWithSetorNome extends Partial<Militar> {
+  id: string;
+  nome?: string;
+  nome_completo?: string;
+  nome_guerra: string;
+  posto?: string;
+  posto_grad?: string;
+  funcao?: string;
+  setor_id?: string;
+  superior_id?: string | null;
+  foto_url?: string | null;
+  endereco?: string | null;
+  telefone?: string | null;
+  email?: string | null;
   setorNome?: string;
   setores?: Array<{ nome: string }>;
   data_nascimento?: string | null;

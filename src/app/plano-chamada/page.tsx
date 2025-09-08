@@ -7,7 +7,14 @@ import { supabase } from '@/lib/auth-helpers';
 import DashboardNav from '@/components/DashboardNav';
 import { Militar } from '@/types/database.types';
 
-interface MilitarWithSetor extends Militar {
+interface MilitarWithSetor extends Partial<Militar> {
+  id: string;
+  nome: string;
+  nome_guerra: string;
+  posto: string;
+  setor_id: string;
+  endereco?: string | null;
+  telefone?: string | null;
   setor_nome?: string;
   setores?: Array<{
     nome: string;
@@ -59,18 +66,12 @@ export default function PlanoChamada() {
       // Formatar dados dos militares
       const formattedMilitares: MilitarWithSetor[] = militaresData?.map((militar) => ({
         id: militar.id,
-        nome_completo: militar.nome_completo || '',
+        nome: militar.nome || '',
         nome_guerra: militar.nome_guerra || '',
-        posto_grad: militar.posto_grad || militar.posto || '',
-        funcao: militar.funcao || '',
+        posto: militar.posto || '',
         setor_id: militar.setor_id || '',
-        superior_id: militar.superior_id || null,
-        foto_url: militar.foto_url || null,
         endereco: militar.endereco || null,
         telefone: militar.telefone || null,
-        email: militar.email || null,
-        created_at: militar.created_at,
-        updated_at: militar.updated_at,
         setores: militar.setores,
         setor_nome: militar.setores && militar.setores.length > 0 ? militar.setores[0].nome : 'Sem setor'
       })) || [];
@@ -98,8 +99,8 @@ export default function PlanoChamada() {
   const filteredMilitares = militares.filter(militar => {
     const matchesSearch = 
       militar.nome_guerra.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      militar.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (militar.posto_grad || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (militar.nome?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (militar.posto || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (militar.telefone && militar.telefone.includes(searchTerm));
     
     const matchesSetor = selectedSetor === 'todos' || militar.setor_id === selectedSetor;

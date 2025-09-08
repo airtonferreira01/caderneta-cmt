@@ -2,17 +2,7 @@
 
 import { createContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-
-interface UserProfile {
-  id: string;
-  user_id: string;
-  nome?: string;
-  posto?: string;
-  militar_id?: string;
-  perfil: string;
-  created_at: string;
-  updated_at: string;
-}
+import { UserProfile } from '@/lib/auth-helpers';
 
 interface AuthContextType {
   user: User | null;

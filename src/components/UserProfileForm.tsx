@@ -5,7 +5,7 @@ import { getUserProfile, updateUserProfile, UserProfile } from '../lib/auth-help
 
 // Interface FormData para os dados do formulário
 
-interface FormData {
+interface FormData extends Record<string, unknown> {
   nome: string;
   posto: string;
 }
@@ -63,7 +63,7 @@ export default function UserProfileForm() {
     
     try {
       setLoading(true);
-      const response = await updateUserProfile(formData);
+      const response = await updateUserProfile(formData as Record<string, unknown>);
       const { data, error } = response;
       
       if (error) {
@@ -137,7 +137,7 @@ export default function UserProfileForm() {
             <p><strong>Nome Completo:</strong> {profile.militares?.nome_completo}</p>
             <p><strong>Nome de Guerra:</strong> {profile.militares?.nome_guerra}</p>
             <p><strong>Função:</strong> {profile.militares?.funcao}</p>
-            <p><strong>Setor:</strong> {profile.setor?.nome}</p>
+            <p><strong>Setor:</strong> {profile.setores?.nome}</p>
           </div>
         )}
         

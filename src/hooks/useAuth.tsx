@@ -1,20 +1,9 @@
 'use client';
 
 import { useState, useEffect, useContext, ReactNode } from 'react';
-import { supabase, getUserProfile } from '@/lib/auth-helpers';
+import { supabase, getUserProfile, UserProfile } from '@/lib/auth-helpers';
 import AuthContext from '@/contexts/AuthContext';
 import { User, Session } from '@supabase/supabase-js';
-
-interface UserProfile {
-  id: string;
-  user_id: string;
-  nome?: string;
-  posto?: string;
-  militar_id?: string;
-  perfil: string;
-  created_at: string;
-  updated_at: string;
-}
 
 /**
  * Provedor de autenticação para a aplicação

@@ -5,7 +5,12 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import Image from 'next/image';
 import { Militar } from '@/types/database.types';
 
-interface MilitarNodeData extends Militar {
+interface MilitarNodeData extends Partial<Militar> {
+  id: string;
+  nome?: string;
+  nome_guerra: string;
+  posto?: string;
+  posto_grad?: string;
   setorNome: string;
   setores?: Array<{ nome: string }>;
 }

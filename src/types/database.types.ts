@@ -1,8 +1,10 @@
 export type Militar = {
   id: string;
-  nome_completo: string;
+  nome: string;
+  nome_completo?: string;
   nome_guerra: string;
-  posto_grad: string;
+  posto: string;
+  posto_grad?: string;
   funcao: string;
   setor_id: string;
   superior_id: string | null;

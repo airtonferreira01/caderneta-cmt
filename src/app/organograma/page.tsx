@@ -20,7 +20,12 @@ export default function Organograma() {
   const [edges, setEdges] = useState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  interface MilitarWithSetorNome extends Militar {
+  interface MilitarWithSetorNome extends Partial<Militar> {
+    id: string;
+    nome: string;
+    nome_guerra: string;
+    posto: string;
+    setor_id: string;
     setorNome: string;
     setores?: Array<{ nome: string }>;
   }
@@ -102,18 +107,10 @@ export default function Organograma() {
             position: { x: 0, y: 0 }, // Posição será calculada depois
             data: {
               id: militar.id,
-              nome_completo: militar.nome_completo || '',
+              nome: militar.nome || '',
               nome_guerra: militar.nome_guerra || '',
-              posto_grad: militar.posto_grad || '',
-              funcao: militar.funcao || '',
+              posto: militar.posto || '',
               setor_id: militar.setor_id || '',
-              superior_id: militar.superior_id || null,
-              foto_url: militar.foto_url || null,
-              endereco: militar.endereco || null,
-              telefone: militar.telefone || null,
-              email: militar.email || null,
-              created_at: militar.created_at,
-              updated_at: militar.updated_at,
               setores: militar.setores,
               setorNome: setor?.nome || 'Sem setor',
             },
