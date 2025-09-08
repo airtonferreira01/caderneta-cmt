@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,11 @@ export default function DashboardNav() {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const adminMenuRef = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
     if (signOut) {
@@ -24,7 +29,45 @@ export default function DashboardNav() {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+    // Fechar outros menus quando abrir o menu mobile
+    if (!mobileMenuOpen) {
+      setProfileMenuOpen(false);
+      setAdminMenuOpen(false);
+    }
   };
+  
+  const toggleProfileMenu = () => {
+    setProfileMenuOpen(!profileMenuOpen);
+    // Fechar outros menus quando abrir o menu de perfil
+    if (!profileMenuOpen) {
+      setAdminMenuOpen(false);
+    }
+  };
+  
+  const toggleAdminMenu = () => {
+    setAdminMenuOpen(!adminMenuOpen);
+    // Fechar outros menus quando abrir o menu admin
+    if (!adminMenuOpen) {
+      setProfileMenuOpen(false);
+    }
+  };
+  
+  // Fechar menus quando clicar fora deles
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+      if (adminMenuRef.current && !adminMenuRef.current.contains(event.target as Node)) {
+        setAdminMenuOpen(false);
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-green-700 dark:bg-gray-800 text-white shadow-md">
@@ -53,28 +96,51 @@ export default function DashboardNav() {
             
             {/* Menu Admin */}
             {(isAdmin && isAdmin() || isComandante && isComandante()) && (
-              <div className="relative group">
-                <button className="hover:text-green-200 dark:hover:text-blue-200 transition duration-300 flex items-center">
-                  Cadastros
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="relative" ref={adminMenuRef}>
+                <button 
+                  onClick={toggleAdminMenu}
+                  className="flex items-center px-3 py-2 rounded-md hover:bg-green-600 dark:hover:bg-gray-700 transition duration-300"
+                >
+                  <span>Cadastros</span>
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className={`h-4 w-4 ml-1 transition-transform duration-200 ${adminMenuOpen ? 'transform rotate-180' : ''}`} 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                  <Link href="/cadastro/militares" className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600">
-                    Militares
-                  </Link>
-                  {isAdmin && isAdmin() && (
-                    <>
-                      <Link href="/cadastro/setores" className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600">
-                        Setores
-                      </Link>
-                      <Link href="/cadastro/oms" className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600">
-                        Organizações Militares
-                      </Link>
-                    </>
-                  )}
-                </div>
+                {adminMenuOpen && (
+                  <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10 border border-gray-200 dark:border-gray-700">
+                    <Link 
+                      href="/cadastro/militares" 
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-gray-700 transition duration-150"
+                      onClick={() => setAdminMenuOpen(false)}
+                    >
+                      Militares
+                    </Link>
+                    {isAdmin && isAdmin() && (
+                      <>
+                        <Link 
+                          href="/cadastro/setores" 
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-gray-700 transition duration-150"
+                          onClick={() => setAdminMenuOpen(false)}
+                        >
+                          Setores
+                        </Link>
+                        <Link 
+                          href="/cadastro/oms" 
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-gray-700 transition duration-150"
+                          onClick={() => setAdminMenuOpen(false)}
+                        >
+                          Organizações Militares
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -96,24 +162,42 @@ export default function DashboardNav() {
                 )}
               </button>
 
-              <div className="relative group">
-                <button className="flex items-center space-x-2 hover:text-green-200 dark:hover:text-blue-200 transition duration-300">
+              <div className="relative" ref={profileMenuRef}>
+                <button 
+                  onClick={toggleProfileMenu}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-green-600 dark:hover:bg-gray-700 transition duration-300"
+                >
                   <span className="font-medium">{profile?.nome || user?.email}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className={`h-4 w-4 transition-transform duration-200 ${profileMenuOpen ? 'transform rotate-180' : ''}`} 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                  <Link href="/perfil/editar" className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600">
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10 border border-gray-200 dark:border-gray-700">
+                  <Link 
+                    href="/perfil/editar" 
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-gray-700 transition duration-150"
+                    onClick={() => setProfileMenuOpen(false)}
+                  >
                     Editar Perfil
                   </Link>
                   <button 
-                    onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600"
+                    onClick={() => {
+                      setProfileMenuOpen(false);
+                      handleSignOut();
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-gray-700 transition duration-150"
                   >
                     Sair
                   </button>
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -147,6 +231,13 @@ export default function DashboardNav() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Organograma
+              </Link>
+              <Link 
+                href="/plano-chamada" 
+                className="hover:bg-green-600 dark:hover:bg-gray-700 px-3 py-2 rounded-md transition duration-300"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Plano de Chamada
               </Link>
               
               {/* Menu Admin Mobile */}
