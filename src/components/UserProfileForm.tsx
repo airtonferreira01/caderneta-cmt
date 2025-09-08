@@ -1,20 +1,36 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { getUserProfile, updateUserProfile } from '../lib/auth-helpers';
+
+interface UserProfile {
+  id: string;
+  user_id: string;
+  nome?: string;
+  posto?: string;
+  perfil: string;
+  militar_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface FormData {
+  nome: string;
+  posto: string;
+}
 
 /**
  * Componente de formulário para exibir e editar o perfil do usuário
  */
 export default function UserProfileForm() {
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<FormData>({
     nome: '',
     posto: '',
   });
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<string>('');
 
   // Carregar perfil do usuário ao montar o componente
   useEffect(() => {
@@ -24,10 +40,10 @@ export default function UserProfileForm() {
         const userProfile = await getUserProfile();
         
         if (userProfile) {
-          setProfile(userProfile);
+          setProfile(userProfile as UserProfile);
           setFormData({
-            nome: userProfile.nome || '',
-            posto: userProfile.posto || '',
+            nome: (userProfile as UserProfile).nome || '',
+            posto: (userProfile as UserProfile).posto || '',
           });
         }
       } catch (err) {
@@ -42,7 +58,7 @@ export default function UserProfileForm() {
   }, []);
 
   // Manipular mudanças no formulário
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -51,12 +67,13 @@ export default function UserProfileForm() {
   };
 
   // Enviar formulário
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     try {
       setLoading(true);
-      const { data, error } = await updateUserProfile(formData);
+      const response = await updateUserProfile(formData);
+      const { data, error } = response as { data: UserProfile | null; error: Error | null };
       
       if (error) {
         throw error;
@@ -68,7 +85,7 @@ export default function UserProfileForm() {
       // Limpar mensagem após 3 segundos
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      setError('Erro ao atualizar perfil: ' + err.message);
+      setError('Erro ao atualizar perfil: ' + (err instanceof Error ? err.message : 'Erro desconhecido'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -126,10 +143,10 @@ export default function UserProfileForm() {
         {profile?.militar_id && (
           <div className="mb-4 p-4 bg-gray-50 rounded">
             <h3 className="font-semibold mb-2">Dados do Militar</h3>
-            <p><strong>Nome Completo:</strong> {profile.militares?.nome_completo}</p>
-            <p><strong>Nome de Guerra:</strong> {profile.militares?.nome_guerra}</p>
-            <p><strong>Função:</strong> {profile.militares?.funcao}</p>
-            <p><strong>Setor:</strong> {profile.setores?.nome}</p>
+            <p><strong>Nome Completo:</strong> {(profile as any).militares?.nome_completo}</p>
+            <p><strong>Nome de Guerra:</strong> {(profile as any).militares?.nome_guerra}</p>
+            <p><strong>Função:</strong> {(profile as any).militares?.funcao}</p>
+            <p><strong>Setor:</strong> {(profile as any).setor?.nome}</p>
           </div>
         )}
         

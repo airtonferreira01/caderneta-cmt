@@ -1,10 +1,14 @@
 'use client';
 
-import { Militar, Setor } from '@/types/database.types';
+import { Militar } from '@/types/database.types';
 import Image from 'next/image';
 
+interface MilitarWithSetorNome extends Militar {
+  setorNome?: string;
+}
+
 type MilitarDetailsProps = {
-  militar: Militar & { setorNome?: string } | null;
+  militar: MilitarWithSetorNome | null;
   onClose: () => void;
 };
 
@@ -54,15 +58,15 @@ const MilitarDetails = ({ militar, onClose }: MilitarDetailsProps) => {
             <InfoItem label="Função" value={militar.funcao || 'Não informada'} />
             <InfoItem label="Email" value={militar.email || 'Não informado'} />
             <InfoItem label="Telefone" value={militar.telefone || 'Não informado'} />
-            <InfoItem label="Data de Nascimento" value={formatDate(militar.data_nascimento)} />
-            <InfoItem label="Data de Praça" value={formatDate(militar.data_praca)} />
+            <InfoItem label="Data de Nascimento" value={formatDate((militar as any).data_nascimento)} />
+            <InfoItem label="Data de Praça" value={formatDate((militar as any).data_praca)} />
           </div>
           
-          {militar.observacoes && (
+          {(militar as Militar & { observacoes?: string }).observacoes && (
             <div className="mb-4">
               <h4 className="font-semibold text-gray-700 mb-2">Observações</h4>
               <p className="text-gray-600 bg-gray-50 p-3 rounded border border-gray-200">
-                {militar.observacoes}
+                {(militar as Militar & { observacoes?: string })?.observacoes}
               </p>
             </div>
           )}

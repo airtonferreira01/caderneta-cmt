@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import ReactFlow, { Background, Controls, MiniMap, Node, Edge, useReactFlow } from 'reactflow';
+import ReactFlow, { Background, Controls, MiniMap, Node, Edge, useReactFlow, NodeMouseHandler } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { createBrowserClient } from '@/lib/supabase';
+import { createBrowserClient } from '@/lib/auth-helpers';
 import { Militar, Setor } from '@/types/database.types';
 import MilitarNode from '@/components/MilitarNode';
 import MilitarDetails from '@/components/MilitarDetails';
@@ -15,11 +15,15 @@ const nodeTypes = {
 };
 
 export default function Organograma() {
-  const [nodes, setNodes] = useState<Node[]>([]);
+  const [nodes, setNodes] = useState<Node<MilitarWithSetorNome>[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedMilitar, setSelectedMilitar] = useState<(Militar & { setorNome: string }) | null>(null);
+  interface MilitarWithSetorNome extends Militar {
+    setorNome: string;
+  }
+  
+  const [selectedMilitar, setSelectedMilitar] = useState<MilitarWithSetorNome | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
   
@@ -31,20 +35,20 @@ export default function Organograma() {
         
         // Buscar militares
         const { data: militares, error: militaresError } = await supabase
-          .from('militares')
+          .from('militares').select<Militar>()
           .select('*');
           
         if (militaresError) throw militaresError;
         
         // Buscar setores
         const { data: setores, error: setoresError } = await supabase
-          .from('setores')
+          .from<Setor>('setores')
           .select('*');
           
         if (setoresError) throw setoresError;
         
         // Transformar dados em nós e arestas para o ReactFlow
-        const flowNodes: Node[] = [];
+        const flowNodes: Node<MilitarWithSetorNome>[] = [];
         const flowEdges: Edge[] = [];
         
         // Criar nós para cada militar
@@ -100,7 +104,7 @@ export default function Organograma() {
       .subscribe();
       
     const setoresSubscription = supabase
-      .channel('setores-changes')
+      .channel('setores-changes' as string)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'setores' }, () => {
         // Recarregar dados quando houver mudanças
         fetchData();
@@ -109,13 +113,13 @@ export default function Organograma() {
     
     return () => {
       // Limpar inscrições ao desmontar o componente
-      supabase.removeChannel(militaresSubscription);
-      supabase.removeChannel(setoresSubscription);
+      militaresSubscription.unsubscribe();
+      setoresSubscription.unsubscribe();
     };
   }, []);
   
   // Função para organizar os nós em uma estrutura hierárquica
-  const organizeHierarchy = (nodes: Node[], edges: Edge[]) => {
+  const organizeHierarchy = (nodes: Node<MilitarWithSetorNome>[], edges: Edge[]) => {
     // Encontrar nós raiz (sem superior)
     const rootNodes = nodes.filter(node => {
       return !edges.some(edge => edge.target === node.id);
@@ -185,9 +189,9 @@ export default function Organograma() {
   }
   
   // Função para lidar com o clique em um nó
-  const onNodeClick = (event: React.MouseEvent, node: Node) => {
+  const onNodeClick: NodeMouseHandler = (event, node) => {
     // Encontrar o militar correspondente ao nó clicado
-    const militar = node.data as Militar & { setorNome: string };
+    const militar = node.data as MilitarWithSetorNome;
     setSelectedMilitar(militar);
   };
   
@@ -195,7 +199,7 @@ export default function Organograma() {
   const filteredNodes = searchTerm.trim() === '' 
     ? nodes 
     : nodes.filter(node => {
-        const data = node.data as Militar & { setorNome: string };
+        const data = node.data;
         const searchLower = searchTerm.toLowerCase();
         return (
           data.nome_completo?.toLowerCase().includes(searchLower) ||

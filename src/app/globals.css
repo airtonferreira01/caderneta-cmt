@@ -3,11 +3,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #0a3866;
-  --primary-dark: #001e40;
+  --primary: #00a651; /* Verde conforme solicitado */
+  --primary-dark: #008c44;
   --secondary: #ffc107;
   --secondary-hover: #ffca28;
-  --accent: #1e3a8a;
+  --accent: #0a3866;
 }
 
 :root {
@@ -22,11 +22,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #121212;
+  --foreground: #ededed;
+  --primary: #121212; /* Preto para modo escuro */
+  --primary-dark: #000000;
+  --secondary: #333333; /* Cinza para modo escuro */
+  --secondary-hover: #444444;
+  --accent: #0d47a1; /* Azul para modo escuro */
 }
 
 body {
@@ -34,4 +37,40 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   scroll-behavior: smooth;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Estilos personalizados para o tema */
+.btn-primary {
+  background-color: rgb(22 163 74);
+  color: white;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+}
+
+.btn-primary:hover {
+  background-color: rgb(21 128 61);
+}
+
+.btn-primary-dark {
+  background-color: rgb(30 64 175);
+}
+.btn-primary-dark:hover {
+  background-color: rgb(30 58 138);
+}
+
+.card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+}
+
+.dark .card {
+  background-color: rgb(31 41 55);
 }

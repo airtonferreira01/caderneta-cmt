@@ -11,6 +11,17 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /**
+ * Criar cliente Supabase no navegador
+ * @returns {Object} Cliente Supabase
+ */
+export const createBrowserClient = () => {
+  return createClient(supabaseUrl, supabaseAnonKey);
+};
+
+// Exportar como default para compatibilidade com importações de '@/lib/supabase'
+export default { createBrowserClient, supabase };
+
+/**
  * Obter o perfil do usuário atual
  * @returns {Promise<Object>} Dados do perfil do usuário
  */

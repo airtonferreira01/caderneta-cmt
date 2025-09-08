@@ -1,16 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { supabase, createUserProfile } from '../lib/auth-helpers';
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { supabase, createUserProfile } from '@/lib/auth-helpers';
 
 /**
  * Componente de formulário para registro de novos usuários
  */
 export default function RegisterForm() {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
+  interface FormData {
+    email: string;
+    password: string;
+    nome: string;
+    posto: string;
+    perfil: string;
+    militar_id: string;
+  }
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     nome: '',
@@ -20,7 +29,7 @@ export default function RegisterForm() {
   });
 
   // Manipular mudanças no formulário
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -29,7 +38,7 @@ export default function RegisterForm() {
   };
 
   // Enviar formulário de registro
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setMessage('');
@@ -53,12 +62,12 @@ export default function RegisterForm() {
           militar_id: formData.militar_id || null,
         };
 
-        const { error: profileError } = await createUserProfile(
+        const result = await createUserProfile(
           authData.user.id,
           profileData
         );
 
-        if (profileError) throw profileError;
+        if ('error' in result && result.error) throw result.error;
 
         setMessage(
           'Registro realizado com sucesso! Verifique seu email para confirmar a conta.'
@@ -76,7 +85,7 @@ export default function RegisterForm() {
       }
     } catch (err) {
       console.error('Erro no registro:', err);
-      setError(err.message || 'Ocorreu um erro durante o registro.');
+      setError(err instanceof Error ? err.message : 'Ocorreu um erro durante o registro.');
     } finally {
       setLoading(false);
     }

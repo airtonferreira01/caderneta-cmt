@@ -1,18 +1,30 @@
 'use client';
 
-import { useState, useEffect, createContext, useContext } from 'react';
-import { supabase, getUserProfile } from '../lib/auth-helpers';
+import { useState, useEffect, useContext, ReactNode } from 'react';
+import { supabase, getUserProfile } from '@/lib/auth-helpers';
+import AuthContext from '@/contexts/AuthContext';
+import { User } from '@supabase/supabase-js';
 
-// Criar contexto de autenticação
-const AuthContext = createContext();
+interface UserProfile {
+  id: string;
+  user_id: string;
+  militar_id?: string;
+  perfil: string;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
  * Provedor de autenticação para a aplicação
  */
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Carregar usuário e perfil ao iniciar
   useEffect(() => {
@@ -27,7 +39,7 @@ export function AuthProvider({ children }) {
           
           // Carregar perfil do usuário
           const userProfile = await getUserProfile();
-          setProfile(userProfile);
+          setProfile(userProfile as UserProfile | null);
         }
       } catch (error) {
         console.error('Erro ao carregar usuário:', error);
@@ -45,7 +57,7 @@ export function AuthProvider({ children }) {
         if (session?.user) {
           setUser(session.user);
           const userProfile = await getUserProfile();
-          setProfile(userProfile);
+          setProfile(userProfile as UserProfile | null);
         } else {
           setUser(null);
           setProfile(null);
@@ -63,7 +75,7 @@ export function AuthProvider({ children }) {
   /**
    * Fazer login com email e senha
    */
-  const signIn = async (email, password) => {
+  const signIn = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -73,7 +85,7 @@ export function AuthProvider({ children }) {
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
-      console.error('Erro ao fazer login:', error.message);
+      console.error('Erro ao fazer login:', (error as Error).message);
       return { data: null, error };
     }
   };
@@ -87,7 +99,7 @@ export function AuthProvider({ children }) {
       if (error) throw error;
       return { error: null };
     } catch (error) {
-      console.error('Erro ao fazer logout:', error.message);
+      console.error('Erro ao fazer logout:', (error as Error).message);
       return { error };
     }
   };
@@ -95,7 +107,7 @@ export function AuthProvider({ children }) {
   /**
    * Verificar se o usuário tem um determinado perfil
    */
-  const hasRole = (role) => {
+  const hasRole = (role: string | string[]) => {
     if (!profile) return false;
     
     if (Array.isArray(role)) {
@@ -105,8 +117,21 @@ export function AuthProvider({ children }) {
     return profile.perfil === role;
   };
 
+  interface AuthContextType {
+    user: User | null;
+    profile: UserProfile | null;
+    loading: boolean;
+    signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
+    signOut: () => Promise<{ error: any }>;
+    hasRole: (role: string | string[]) => boolean;
+    isAdmin: () => boolean;
+    isComandante: () => boolean;
+    isMilitar: () => boolean;
+    refreshProfile: () => Promise<UserProfile | null>;
+  }
+
   // Valores expostos pelo contexto
-  const value = {
+  const value: AuthContextType = {
     user,
     profile,
     loading,
@@ -116,10 +141,10 @@ export function AuthProvider({ children }) {
     isAdmin: () => hasRole('admin'),
     isComandante: () => hasRole(['admin', 'comandante']),
     isMilitar: () => !!profile,
-    refreshProfile: async () => {
+    refreshProfile: async (): Promise<UserProfile | null> => {
       const userProfile = await getUserProfile();
-      setProfile(userProfile);
-      return userProfile;
+      setProfile(userProfile as UserProfile | null);
+      return userProfile as UserProfile | null;
     },
   };
 

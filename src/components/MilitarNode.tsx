@@ -5,9 +5,9 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import Image from 'next/image';
 import { Militar } from '@/types/database.types';
 
-type MilitarNodeData = Militar & {
+interface MilitarNodeData extends Militar {
   setorNome: string;
-};
+}
 
 // Função para determinar a cor de fundo baseada no posto/graduação
 const getBackgroundColor = (postoGrad: string) => {
