@@ -101,7 +101,20 @@ export default function Organograma() {
             type: 'militar',
             position: { x: 0, y: 0 }, // Posição será calculada depois
             data: {
-              ...militar,
+              id: militar.id,
+              nome_completo: militar.nome_completo || '',
+              nome_guerra: militar.nome_guerra || '',
+              posto_grad: militar.posto_grad || '',
+              funcao: militar.funcao || '',
+              setor_id: militar.setor_id || '',
+              superior_id: militar.superior_id || null,
+              foto_url: militar.foto_url || null,
+              endereco: militar.endereco || null,
+              telefone: militar.telefone || null,
+              email: militar.email || null,
+              created_at: militar.created_at,
+              updated_at: militar.updated_at,
+              setores: militar.setores,
               setorNome: setor?.nome || 'Sem setor',
             },
           });
