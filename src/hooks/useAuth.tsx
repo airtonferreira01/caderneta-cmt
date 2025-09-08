@@ -8,6 +8,8 @@ import { User, Session } from '@supabase/supabase-js';
 interface UserProfile {
   id: string;
   user_id: string;
+  nome?: string;
+  posto?: string;
   militar_id?: string;
   perfil: string;
   created_at: string;
