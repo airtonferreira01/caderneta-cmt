@@ -95,7 +95,7 @@ export async function updateUserProfile(profileData) {
     return { data, error: null };
   } catch (error) {
     console.error('Erro ao atualizar perfil:', error.message);
-    return { data: null, error };
+    return { data: null, error: error instanceof Error ? error : new Error('Erro desconhecido') };
   }
 }
 
@@ -153,6 +153,6 @@ export async function createUserProfile(userId, profileData) {
     return { data, error: null };
   } catch (error) {
     console.error('Erro ao criar perfil de usuário:', error.message);
-    return { data: null, error };
+    return { data: null, error: error instanceof Error ? error : new Error('Erro desconhecido') };
   }
 }

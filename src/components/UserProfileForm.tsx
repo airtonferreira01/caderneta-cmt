@@ -134,10 +134,10 @@ export default function UserProfileForm() {
         {profile?.militar_id && (
           <div className="mb-4 p-4 bg-gray-50 rounded">
             <h3 className="font-semibold mb-2">Dados do Militar</h3>
-            <p><strong>Nome Completo:</strong> {profile.militares?.nome_completo}</p>
-            <p><strong>Nome de Guerra:</strong> {profile.militares?.nome_guerra}</p>
-            <p><strong>Função:</strong> {profile.militares?.funcao}</p>
-            <p><strong>Setor:</strong> {profile.setores?.nome}</p>
+            <p><strong>Nome Completo:</strong> {profile.militares?.[0]?.nome_completo}</p>
+            <p><strong>Nome de Guerra:</strong> {profile.militares?.[0]?.nome_guerra}</p>
+            <p><strong>Função:</strong> {profile.militares?.[0]?.funcao}</p>
+            <p><strong>Setor:</strong> {profile.setores?.[0]?.nome}</p>
           </div>
         )}
         

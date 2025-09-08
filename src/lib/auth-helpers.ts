@@ -23,14 +23,14 @@ export interface UserProfile {
     posto_grad: string;
     funcao: string;
     foto_url?: string;
-  };
+  }[];
   om?: {
     nome: string;
     tipo: string;
-  };
+  }[];
   setores?: {
     nome: string;
-  };
+  }[];
 }
 
 // Inicializar cliente Supabase
@@ -81,6 +81,8 @@ export async function getUserProfile(): Promise<UserProfile | null> {
         militar_id,
         om_id,
         setor_id,
+        created_at,
+        updated_at,
         militares(nome_completo, nome_guerra, posto_grad, funcao, foto_url),
         om(nome, tipo),
         setores(nome)
@@ -188,6 +190,6 @@ export async function createUserProfile(userId: string, profileData: Record<stri
     return { data, error: null };
   } catch (error) {
     console.error('Erro ao criar perfil de usuário:', error instanceof Error ? error.message : 'Erro desconhecido');
-    return { data: null, error };
+    return { data: null, error: error instanceof Error ? error : new Error('Erro desconhecido') };
   }
 }
