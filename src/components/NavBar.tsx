@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 
@@ -22,7 +22,7 @@ export default function NavBar() {
   
   // Referências para detectar cliques fora dos menus
   const profileMenuRef = useRef<HTMLDivElement>(null);
-  const adminMenuRef = useRef<HTMLDivElement>(null);
+  const adminMenuRef = useRef<HTMLLIElement>(null);
   
   const handleSignOut = async () => {
     if (signOut) {
@@ -90,6 +90,27 @@ export default function NavBar() {
           </Link>
         </div>
         
+        {/* Botão de menu mobile */}
+        <button 
+          onClick={toggleMobileMenu}
+          className="md:hidden flex items-center p-2 rounded-md hover:bg-green-600 dark:hover:bg-gray-700 transition duration-300"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-6 w-6" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} 
+            />
+          </svg>
+        </button>
+        
         <div className="flex items-center space-x-4">
           <button 
             onClick={toggleTheme} 
@@ -113,26 +134,161 @@ export default function NavBar() {
             )}
           </button>
           
-          <Link 
-            href="/perfil" 
-            className="flex items-center hover:underline"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-            </svg>
-            Perfil
-          </Link>
-          
-          <button className="flex items-center hover:underline">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-            </svg>
-            Sair
-          </button>
+          <div className="relative" ref={profileMenuRef}>
+            <button 
+              onClick={toggleProfileMenu}
+              className="flex items-center hover:bg-green-600 dark:hover:bg-gray-700 p-2 rounded-md transition duration-300"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
+              <span className="hidden sm:inline">Perfil</span>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className={`h-4 w-4 ml-1 transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {profileMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10">
+                <Link 
+                  href="/perfil" 
+                  className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600"
+                  onClick={() => setProfileMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    Editar Perfil
+                  </div>
+                </Link>
+                
+                <button 
+                  onClick={() => {
+                    setProfileMenuOpen(false);
+                    handleSignOut();
+                  }}
+                  className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600"
+                >
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+                    </svg>
+                    Sair
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
-      <nav className="bg-green-50 dark:bg-gray-800 text-green-900 dark:text-white">
+      {/* Menu mobile */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-green-600 dark:bg-gray-700 text-white">
+          <div className="container mx-auto px-4 py-2">
+            <ul className="flex flex-col space-y-2">
+              <li>
+                <Link 
+                  href="/dashboard" 
+                  className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/organograma" 
+                  className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Organograma
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/militares" 
+                  className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Militares
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/gestao" 
+                  className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Gestão de Estrutura
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/plano-chamada" 
+                  className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Plano de Chamada
+                </Link>
+              </li>
+              {auth?.isAdmin && auth.isAdmin() && (
+                <li>
+                  <button 
+                    onClick={toggleAdminMenu}
+                    className="flex items-center justify-between w-full px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                  >
+                    <span>Cadastros</span>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className={`h-4 w-4 transition-transform ${adminMenuOpen ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {adminMenuOpen && (
+                    <div className="pl-4 mt-1 space-y-1">
+                      <Link 
+                        href="/cadastro/militares" 
+                        className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Militares
+                      </Link>
+                      <Link 
+                        href="/cadastro/setores" 
+                        className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Setores
+                      </Link>
+                      <Link 
+                        href="/cadastro/oms" 
+                        className="block px-3 py-2 rounded-md hover:bg-green-700 dark:hover:bg-gray-600"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Organizações Militares
+                      </Link>
+                    </div>
+                  )}
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
+      
+      <nav className="hidden md:block bg-green-50 dark:bg-gray-800 text-green-900 dark:text-white">
         <div className="container mx-auto px-4">
           <ul className="flex space-x-6">
             <li>
@@ -180,8 +336,10 @@ export default function NavBar() {
               </Link>
             </li>
             {auth?.isAdmin && auth.isAdmin() && (
-              <li className="relative group">
-                <button className="flex items-center py-3 px-2 border-b-2 border-transparent hover:border-green-300 dark:hover:border-gray-500">
+              <li className="relative" ref={adminMenuRef}>
+                <button 
+                  onClick={toggleAdminMenu}
+                  className="flex items-center py-3 px-2 border-b-2 border-transparent hover:border-green-300 dark:hover:border-gray-500">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -191,7 +349,7 @@ export default function NavBar() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="absolute left-0 mt-1 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                <div className={`absolute left-0 mt-1 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 ${adminMenuOpen ? 'block' : 'hidden'}`}>
                   <Link href="/cadastro/militares" className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-green-100 dark:hover:bg-gray-600">
                     Militares
                   </Link>
