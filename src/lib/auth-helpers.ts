@@ -69,8 +69,11 @@ export async function getUserProfile(): Promise<UserProfile | null> {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
+      console.log('Usuário não autenticado:', userError);
       throw new Error('Usuário não autenticado');
     }
+    
+    console.log('Buscando perfil para o usuário ID:', user.id);
     
     // Obter perfil do usuário
     const { data: profile, error: profileError } = await supabase
@@ -97,6 +100,12 @@ export async function getUserProfile(): Promise<UserProfile | null> {
       return null;
     }
     
+    if (!profile) {
+      console.error('Perfil não encontrado para o usuário:', user.id);
+      return null;
+    }
+    
+    console.log('Perfil encontrado:', profile);
     return profile;
   } catch (error) {
     console.error('Erro ao obter perfil do usuário:', error instanceof Error ? error.message : 'Erro desconhecido');
@@ -111,26 +120,45 @@ export async function getUserProfile(): Promise<UserProfile | null> {
  */
 export async function updateUserProfile(profileData: Record<string, unknown>): Promise<{data: UserProfile | null, error: Error | null}> {
   try {
+    console.log('Atualizando perfil com dados:', profileData);
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
+      console.error('Erro ao obter usuário:', userError);
       throw new Error('Usuário não autenticado');
     }
     
+    console.log('Atualizando perfil para usuário ID:', user.id);
+    
+    // Verificar se o perfil já existe
+    const { data: existingProfile, error: profileError } = await supabase
+      .from('perfis_usuarios')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+    
+    if (profileError && profileError.code !== 'PGRST116') { // PGRST116 é o código para 'não encontrado'
+      console.error('Erro ao verificar perfil existente:', profileError);
+      throw profileError;
+    }
+    
+    // Se o perfil existir, atualize-o; caso contrário, crie um novo
     const { data, error } = await supabase
       .from('perfis_usuarios')
       .upsert({
         id: user.id,
         ...profileData,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       })
       .select()
       .single();
     
     if (error) {
+      console.error('Erro ao atualizar perfil:', error);
       throw error;
     }
     
+    console.log('Perfil atualizado com sucesso:', data);
     return { data, error: null };
   } catch (error) {
     console.error('Erro ao atualizar perfil:', error instanceof Error ? error.message : 'Erro desconhecido');
@@ -174,21 +202,43 @@ export async function isComandante() {
  */
 export async function createUserProfile(userId: string, profileData: Record<string, unknown>): Promise<{data: UserProfile | null, error: Error | null}> {
   try {
+    console.log('Iniciando criação de perfil para usuário:', userId);
+    console.log('Dados do perfil:', profileData);
+    
+    // Verificar se já existe um perfil para este usuário
+    const { data: existingProfile, error: checkError } = await supabase
+      .from('perfis_usuarios')
+      .select('id')
+      .eq('id', userId)
+      .single();
+    
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 é o código para 'não encontrado'
+      console.error('Erro ao verificar perfil existente:', checkError);
+    }
+    
+    if (existingProfile) {
+      console.log('Perfil já existe para este usuário, atualizando...');
+      return updateUserProfile(profileData);
+    }
+    
     const { data, error } = await supabase
       .from('perfis_usuarios')
       .insert({
         id: userId,
         ...profileData,
-        created_at: new Date(),
-        updated_at: new Date()
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .select()
       .single();
     
     if (error) {
+      console.error('Erro ao inserir perfil no banco:', error.message);
+      console.error('Detalhes do erro:', error.details);
       throw error;
     }
     
+    console.log('Perfil criado com sucesso:', data);
     return { data, error: null };
   } catch (error) {
     console.error('Erro ao criar perfil de usuário:', error instanceof Error ? error.message : 'Erro desconhecido');

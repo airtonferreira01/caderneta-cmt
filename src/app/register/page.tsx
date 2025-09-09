@@ -38,10 +38,11 @@ export default function Register() {
     setLoading(true);
 
     try {
+      console.log('Iniciando registro com dados:', formData);
       const supabaseClient: SupabaseClient = createBrowserClient();
       
       // Registrar usuário
-      const { error: authError } = await supabaseClient.auth.signUp({
+      const { data: authData, error: authError } = await supabaseClient.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -54,7 +55,41 @@ export default function Register() {
         }
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Erro no registro:', authError);
+        throw authError;
+      }
+
+      console.log('Usuário registrado com sucesso:', authData);
+
+      // Criar perfil do usuário na tabela perfis_usuarios
+      if (authData?.user) {
+        try {
+          console.log('Criando perfil para usuário:', authData.user.id);
+          const { data, error } = await supabaseClient
+            .from('perfis_usuarios')
+            .insert([
+              {
+                id: authData.user.id,
+                nome: formData.nome,
+                posto: formData.posto,
+                perfil: formData.perfil,
+                militar_id: formData.militar_id || null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              },
+            ])
+            .select();
+
+          if (error) {
+            console.error('Erro ao criar perfil:', error);
+          } else {
+            console.log('Perfil criado com sucesso:', data);
+          }
+        } catch (profileError) {
+          console.error('Exceção ao criar perfil:', profileError);
+        }
+      }
 
       setMessage('Registro realizado com sucesso! Verifique seu email para confirmar a conta.');
       

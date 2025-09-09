@@ -45,13 +45,27 @@ export default function RegisterForm() {
     setLoading(true);
 
     try {
+      console.log('Iniciando registro de usuário:', formData.email);
+      
       // 1. Registrar usuário no Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          data: {
+            nome: formData.nome,
+            posto: formData.posto,
+            perfil: formData.perfil
+          }
+        }
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Erro no registro de autenticação:', authError);
+        throw authError;
+      }
+
+      console.log('Usuário registrado com sucesso:', authData);
 
       // 2. Criar perfil do usuário na tabela perfis_usuarios
       if (authData?.user) {
@@ -62,12 +76,19 @@ export default function RegisterForm() {
           militar_id: formData.militar_id || null,
         };
 
+        console.log('Criando perfil de usuário:', profileData);
+        
         const result = await createUserProfile(
           authData.user.id,
           profileData
         );
 
-        if ('error' in result && result.error) throw result.error;
+        if ('error' in result && result.error) {
+          console.error('Erro na criação do perfil:', result.error);
+          throw result.error;
+        }
+
+        console.log('Perfil criado com sucesso:', result);
 
         setMessage(
           'Registro realizado com sucesso! Verifique seu email para confirmar a conta.'

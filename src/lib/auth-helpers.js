@@ -40,8 +40,11 @@ export async function getUserProfile() {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
+      console.log('Usuário não autenticado:', userError);
       throw new Error('Usuário não autenticado');
     }
+    
+    console.log('Buscando perfil para o usuário ID:', user.id);
     
     // Obter perfil do usuário
     const { data: profile, error: profileError } = await supabase
@@ -54,6 +57,8 @@ export async function getUserProfile() {
         militar_id,
         om_id,
         setor_id,
+        created_at,
+        updated_at,
         militares(nome_completo, nome_guerra, posto_grad, funcao, foto_url),
         om(nome, tipo),
         setores(nome)
@@ -80,18 +85,35 @@ export async function getUserProfile() {
  */
 export async function updateUserProfile(profileData) {
   try {
+    console.log('Atualizando perfil com dados:', profileData);
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
+      console.error('Erro ao obter usuário:', userError);
       throw new Error('Usuário não autenticado');
     }
     
+    console.log('Atualizando perfil para usuário ID:', user.id);
+    
+    // Verificar se o perfil já existe
+    const { data: existingProfile, error: profileError } = await supabase
+      .from('perfis_usuarios')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+    
+    if (profileError && profileError.code !== 'PGRST116') { // PGRST116 é o código para 'não encontrado'
+      console.error('Erro ao verificar perfil existente:', profileError);
+      throw profileError;
+    }
+    
+    // Se o perfil existir, atualize-o; caso contrário, crie um novo
     const { data, error } = await supabase
       .from('perfis_usuarios')
       .upsert({
         id: user.id,
         ...profileData,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       })
       .select()
       .single();
@@ -143,13 +165,32 @@ export async function isComandante() {
  */
 export async function createUserProfile(userId, profileData) {
   try {
+    console.log('Iniciando criação de perfil para usuário:', userId);
+    console.log('Dados do perfil:', profileData);
+    
+    // Verificar se já existe um perfil para este usuário
+    const { data: existingProfile, error: checkError } = await supabase
+      .from('perfis_usuarios')
+      .select('id')
+      .eq('id', userId)
+      .single();
+    
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 é o código para 'não encontrado'
+      console.error('Erro ao verificar perfil existente:', checkError);
+    }
+    
+    if (existingProfile) {
+      console.log('Perfil já existe para este usuário, atualizando...');
+      return updateUserProfile(profileData);
+    }
+    
     const { data, error } = await supabase
       .from('perfis_usuarios')
       .insert({
         id: userId,
         ...profileData,
-        created_at: new Date(),
-        updated_at: new Date()
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .select()
       .single();

@@ -68,12 +68,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const signIn = async (email: string, password: string): Promise<{ data: { user: User | null; session: Session | null } | null; error: Error | null }> => {
     try {
+      console.log('Iniciando processo de login para:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro na autenticação:', error.message);
+        throw error;
+      }
+      
+      console.log('Login bem-sucedido, dados do usuário:', data.user?.id);
+      
+      // Carregar perfil do usuário após login bem-sucedido
+      if (data.user) {
+        const userProfile = await getUserProfile();
+        setProfile(userProfile);
+        console.log('Perfil do usuário carregado:', userProfile);
+      }
+      
       return { data, error: null };
     } catch (error) {
       console.error('Erro ao fazer login:', (error as Error).message);

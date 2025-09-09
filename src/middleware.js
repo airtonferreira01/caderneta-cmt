@@ -38,10 +38,10 @@ export async function middleware(req) {
     return NextResponse.redirect(url);
   }
 
-  // Se estiver autenticado e tentar acessar rotas de autenticação, redirecionar para dashboard
+  // Se o usuário estiver autenticado e tentar acessar login/registro, redirecionar para o dashboard
   if (session && (pathname === '/login' || pathname === '/register')) {
-    url.pathname = '/dashboard';
-    return NextResponse.redirect(url);
+    console.log('Usuário autenticado tentando acessar login/registro, redirecionando para /dashboard');
+    return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
   // Verificar permissões para rotas protegidas
@@ -52,6 +52,8 @@ export async function middleware(req) {
       .select('perfil')
       .eq('id', session.user.id)
       .single();
+      
+    console.log('Middleware - Perfil encontrado:', profile);
 
     // Rotas administrativas
     if (pathname.startsWith('/admin') && profile?.perfil !== 'admin') {
