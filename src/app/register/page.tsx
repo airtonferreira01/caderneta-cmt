@@ -108,9 +108,9 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-green-600 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-green-600 dark:bg-green-900 flex flex-col">
       {/* Header */}
-      <header className="bg-green-700 dark:bg-gray-800 text-white p-4 shadow-md">
+      <header className="bg-green-700 dark:bg-green-800 text-white p-4 shadow-md">
         <div className="container mx-auto">
           <Link href="/" className="flex items-center space-x-2 w-fit">
             <Image 
@@ -127,7 +127,7 @@ export default function Register() {
 
       {/* Register Form */}
       <main className="flex-grow flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full">
+        <div className="bg-white dark:bg-green-800 p-8 rounded-lg shadow-xl max-w-md w-full">
           <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Registrar</h2>
           
           {message && (
@@ -239,7 +239,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-green-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-500 dark:disabled:bg-blue-300"
+              className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-500 dark:disabled:bg-green-300"
             >
               {loading ? 'Registrando...' : 'Registrar'}
             </button>
@@ -248,7 +248,7 @@ export default function Register() {
           <div className="mt-6 text-center">
             <p className="text-gray-600 dark:text-gray-300">
               Já tem uma conta?{' '}
-              <Link href="/login" className="text-green-600 dark:text-blue-400 hover:underline">
+              <Link href="/login" className="text-green-600 dark:text-green-400 hover:underline">
                 Faça login
               </Link>
             </p>
@@ -257,7 +257,7 @@ export default function Register() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-green-800 dark:bg-gray-800 text-white p-4">
+      <footer className="bg-green-800 dark:bg-green-800 text-white p-4">
         <div className="container mx-auto text-center">
           <p>© 2023 Caderneta Cmt. Todos os direitos reservados.</p>
         </div>

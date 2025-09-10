@@ -41,7 +41,8 @@ export async function middleware(req) {
   // Se o usuário estiver autenticado e tentar acessar login/registro, redirecionar para o dashboard
   if (session && (pathname === '/login' || pathname === '/register')) {
     console.log('Usuário autenticado tentando acessar login/registro, redirecionando para /dashboard');
-    return NextResponse.redirect(new URL('/dashboard', req.url));
+    const dashboardUrl = new URL('/dashboard', req.url);
+    return NextResponse.redirect(dashboardUrl);
   }
 
   // Verificar permissões para rotas protegidas

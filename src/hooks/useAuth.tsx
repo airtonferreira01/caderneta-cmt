@@ -75,23 +75,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
 
       if (error) {
-        console.error('Erro na autenticação:', error.message);
-        throw error;
+        console.error('Erro no login:', error.message);
+        return { data: null, error };
       }
       
-      console.log('Login bem-sucedido, dados do usuário:', data.user?.id);
+      console.log('Login bem-sucedido, carregando perfil...');
       
       // Carregar perfil do usuário após login bem-sucedido
       if (data.user) {
         const userProfile = await getUserProfile();
         setProfile(userProfile);
-        console.log('Perfil do usuário carregado:', userProfile);
+        console.log('Perfil carregado após login:', userProfile);
       }
       
       return { data, error: null };
-    } catch (error) {
-      console.error('Erro ao fazer login:', (error as Error).message);
-      return { data: null, error: error as Error };
+    } catch (err) {
+      console.error('Exceção no processo de login:', err);
+      return { data: null, error: err instanceof Error ? err : new Error('Erro desconhecido no login') };
     }
   };
 
